@@ -64,9 +64,13 @@ install: $(TARGET)
 clean:
 	@rm -f $(OBJS) $(TARGET)
 
-%.o: %.c
+common/libc/c11/%.o: common/libc/c11/%.c
 	@echo Building: $@
 	@$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
+
+%.o: %.c
+	@echo Building: $@
+	@$(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
 
 %.o: %.s
 	@echo Building: $@
@@ -76,13 +80,18 @@ clean:
 	@echo Building: $@
 	@$(GCCPREFIX)-as $< -o $@
 
-%.o: %.c
-	@echo Building: $@
-	@$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
+hexdump: $(infile)
+	@od -t x1 $(infile) | sed -e "s/[0-9a-fA-F]\{7,9\}//" -e "s/ \([0-9a-fA-F][0-9a-fA-F]\)/0x\1, /g" >> $(outfile)
 
-addons/exports/common_exports.o:
-	@echo Building: $@
-	@$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
+dreamcast/sound/snd_stream_drv.h: dreamcast/sound/snd_stream_drv.bin
+	@echo "unsigned char aica_fw[] = {" >> $@
+	@make hexdump -e infile=$< -e outfile=$@
+	@echo "};\n" >> $@
+
+common/exports/kernel_exports.o:
+	@echo SKIPPING!: $@
+#	@echo Building: $@
+#	@$(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
 
 dreamcast/sound/snd_stream_drv.bin:
 	@echo Building ARM sound driver...
@@ -94,11 +103,11 @@ dreamcast/sound/snd_stream_drv.o: dreamcast/sound/snd_stream_drv.bin
 	@echo "Transforming... $< to $@"
 	@echo ".section .rodata; .align 2; " | $(GCCPREFIX)-as -o tmp3.bin
 	@echo "SECTIONS { .rodata : { _snd_stream_drv = .; *(.data); _snd_stream_drv_end = .; } }" > tmp1.ld
-	@$(GCCPREFIX)-ld --no-warn-mismatch --format binary --oformat elf32-shl dreamcast/sound/snd_stream_drv.bin --format elf32-shl tmp3.bin -o tmp2.bin -r -EL -T tmp1.ld
+	@$(GCCPREFIX)-ld --no-warn-mismatch --format binary --oformat elf32-shl $< --format elf32-shl tmp3.bin -o tmp2.bin -r -EL -T tmp1.ld
 	@$(GCCPREFIX)-objcopy --set-section-flags .rodata=alloc,load,data,readonly tmp2.bin $@
-	@rm -f tmp1.ld tmp2.bin tmp3.bin dreamcast/sound/snd_stream_drv.bin
+	@rm -f tmp1.ld tmp2.bin tmp3.bin $<
 
-dreamcast/kernel/banner.o:
+dreamcast/kernel/banner.o: dreamcast/kernel/banner.c
 	@echo Generating banner data...
 	$(eval VERSION:=Git revision $(shell git rev-list --full-history --all --abbrev-commit | head -1))
 	$(eval HOSTNAME:=$(shell hostname -f))
@@ -106,9 +115,4 @@ dreamcast/kernel/banner.o:
 	$(eval LICENSE:="$(shell cat LICENSE):")
 	$(eval AUTHORS:="$(shell cat AUTHORS)")
 	@echo Building: $@
-	$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) \
-		-DBANNER=$(BANNER) \
-		-DLICENSE=$(LICENSE) \
-		-DAUTHORS=$(AUTHORS) \
-		-c dreamcast/kernel/banner.c -o $@
-	exit 0
+	$(GCCPREFIX)-gcc $(CFLAGS) -DBANNER=$(BANNER) -DLICENSE=$(LICENSE) -DAUTHORS=$(AUTHORS) -c $< -o $@
