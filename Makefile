@@ -1,49 +1,114 @@
-# KallistiOS ##version##
-#
-# Root Makefile
-# Copyright (C) 2003 Dan Potter
-#
-
-# Make sure things compile nice and cleanly. We don't necessarily want to push
-# these flags out on to user code, but it's a good idea to keep them around for
-# compiling all of KOS proper.
-# I expect everyone to keep their code warning free. Don't make me add -Werror
-# here too. ;-)
-KOS_CFLAGS += -Wextra
-
-# Add stuff to DIRS to auto-compile it with the big tree.
-DIRS = utils
-DIRS += kernel addons # examples
-
-# Detect a non-working or missing environ.sh file.
-ifndef KOS_BASE
-error:
-	@echo You don\'t seem to have a working  environ.sh file. Please take a look at
-	@echo doc/README for more info.
-	@exit 0
+ifndef PLATFORM
+  PLATFORM:=dreamcast
 endif
 
-all:
-	for i in $(DIRS); do $(KOS_MAKE) -C $$i || exit -1; done
+ifndef ARCH
+  ARCH:=sh-elf
+endif
+
+ifndef INSTALL_PATH
+  INSTALL_PATH:=/usr/local
+endif
+
+OBJS:=$(shell "sh" "filelist.sh")
+
+TARGET:=libkos.a
+
+DEFINES:= \
+        -D_arch_$(PLATFORM) \
+        -DPLATFORM="$(PLATFORM)"
+
+CFLAGS:=$(DEFINES) \
+	-std=c11 \
+        -Wall -Wextra \
+        -g \
+        -fno-builtin \
+        -fno-strict-aliasing \
+        -fomit-frame-pointer \
+        -ffunction-sections \
+        -fdata-sections
+
+CFLAGS+=-Icommon/include \
+	-Iaddons/include \
+	-I$(PLATFORM)/include \
+	-I$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include
+
+# out-of-band includes
+CFLAGS+=-Icommon/net \
+	\
+	-Iaddons/libppp \
+	-Iaddons/libkosutils \
+	-Iaddons/libkosext2fs \
+	\
+	-Idreamcast/hardware/pvr \
+	-Idreamcast/hardware/modem \
+	-Idreamcast/kernel
+
+
+GCCPREFIX:=$(shell echo $(ARCH) | cut -d '-' -f 1)-$(PLATFORM)
+
+$(TARGET): $(OBJS)
+	@$(GCCPREFIX)-ar rcs $@ $(OBJS)
+	@echo Linking: $@
+
+install_headers:
+	@echo "Installing headers..."
+	@cp -R common/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include
+	@cp -R addons/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include
+	@cp -R $(PLATFORM)/include/*	$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include
+
+install: $(TARGET)
+	@echo -n "Installing..."
+	@cp $(TARGET) $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/lib
 
 clean:
-	for i in $(DIRS); do $(KOS_MAKE) -C $$i clean || exit -1; done
+	@rm -f $(OBJS) $(TARGET)
 
-distclean: clean
-	-rm -f lib/$(KOS_ARCH)/*
-	-rm -f addons/lib/$(KOS_ARCH)/*
+%.o: %.c
+	@echo Building: $@
+	@$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
 
-kos-ports_all:
-	$(KOS_PORTS)/utils/build-all.sh
+%.o: %.s
+	@echo Building: $@
+	@$(GCCPREFIX)-as $< -o $@
 
-kos-ports_clean:
-	$(KOS_PORTS)/utils/clean-all.sh
+%.o: %.S
+	@echo Building: $@
+	@$(GCCPREFIX)-as $< -o $@
 
-kos-ports_distclean: kos-ports_clean
-	$(KOS_PORTS)/utils/uninstall-all.sh
+%.o: %.c
+	@echo Building: $@
+	@$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
 
-all_auto_kos_base:
-	$(KOS_MAKE) all KOS_BASE=$(CURDIR)
+addons/exports/common_exports.o:
+	@echo Building: $@
+	@$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
 
-clean_auto_kos_base:
-	$(KOS_MAKE) clean KOS_BASE=$(CURDIR)
+dreamcast/sound/snd_stream_drv.bin:
+	@echo Building ARM sound driver...
+	@make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM)
+	@make -C dreamcast/sound/arm install
+	@make -C dreamcast/sound/arm clean
+
+dreamcast/sound/snd_stream_drv.o: dreamcast/sound/snd_stream_drv.bin
+	@echo "Transforming... $< to $@"
+	@echo ".section .rodata; .align 2; " | $(GCCPREFIX)-as -o tmp3.bin
+	@echo "SECTIONS { .rodata : { _snd_stream_drv = .; *(.data); _snd_stream_drv_end = .; } }" > tmp1.ld
+	@$(GCCPREFIX)-ld --no-warn-mismatch --format binary --oformat elf32-shl dreamcast/sound/snd_stream_drv.bin --format elf32-shl tmp3.bin -o tmp2.bin -r -EL -T tmp1.ld
+	@$(GCCPREFIX)-objcopy --set-section-flags .rodata=alloc,load,data,readonly tmp2.bin $@
+	@rm -f tmp1.ld tmp2.bin tmp3.bin dreamcast/sound/snd_stream_drv.bin
+
+dreamcast/kernel/banner.o:
+	@echo Generating banner data...
+	$(eval VERSION:=Git revision $(shell git rev-list --full-history --all --abbrev-commit | head -1))
+	$(eval HOSTNAME:=$(shell hostname -f))
+	$(eval BANNER:="KallistiOS $(VERSION): $(shell date)\n  $(shell whoami)@$(HOSTNAME)")
+	$(eval LICENSE:="$(shell cat LICENSE):")
+	$(eval AUTHORS:="$(shell cat AUTHORS)")
+	@echo Building: $@
+	$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) \
+		-DBANNER=$(BANNER) \
+		-DLICENSE=$(LICENSE) \
+		-DAUTHORS=$(AUTHORS) \
+		-c dreamcast/kernel/banner.c -o $@
+	exit 0
