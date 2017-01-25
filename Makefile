@@ -91,9 +91,9 @@ dreamcast/sound/snd_stream_drv.h: dreamcast/sound/snd_stream_drv.bin
 
 dreamcast/sound/snd_stream_drv.bin:
 	@echo Building ARM sound driver...
-	$(QUIET) make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG)
-	$(QUIET) make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG) install
-	$(QUIET) make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG) clean
+	$(QUIET) make -C dreamcast/sound/arm -e ARCH=arm-eabi -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG)
+	$(QUIET) make -C dreamcast/sound/arm -e ARCH=arm-eabi -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG) install
+	$(QUIET) make -C dreamcast/sound/arm -e ARCH=arm-eabi -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG) clean
 
 dreamcast/sound/snd_stream_drv.o: dreamcast/sound/snd_stream_drv.bin
 	@echo "Transforming... $< to $@"
