@@ -80,10 +80,6 @@ common/libc/c11/%.o: common/libc/c11/%.c
 hexdump: $(infile)
 	@od -t x1 $(infile) | sed -e "s/[0-9a-fA-F]\{7,9\}//" -e "s/ \([0-9a-fA-F][0-9a-fA-F]\)/0x\1, /g" >> $(outfile)
 
-filequote: $(infile)
-	$(eval export $(outvar)=`cat $< | sed -e "s/$/\\\\\\n/"`)
-
-
 dreamcast/sound/snd_stream_drv.h: dreamcast/sound/snd_stream_drv.bin
 	@echo "unsigned char aica_fw[] = {" >> $@
 	@make hexdump -e infile=$< -e outfile=$@
@@ -92,8 +88,8 @@ dreamcast/sound/snd_stream_drv.h: dreamcast/sound/snd_stream_drv.bin
 dreamcast/sound/snd_stream_drv.bin:
 	@echo Building ARM sound driver...
 	@make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM)
-	@make -C dreamcast/sound/arm install
-	@make -C dreamcast/sound/arm clean
+	@make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) install
+	@make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) clean
 
 dreamcast/sound/snd_stream_drv.o: dreamcast/sound/snd_stream_drv.bin
 	@echo "Transforming... $< to $@"
