@@ -80,15 +80,14 @@ common/libc/c11/%.o: common/libc/c11/%.c
 hexdump: $(infile)
 	@od -t x1 $(infile) | sed -e "s/[0-9a-fA-F]\{7,9\}//" -e "s/ \([0-9a-fA-F][0-9a-fA-F]\)/0x\1, /g" >> $(outfile)
 
+filequote: $(infile)
+	$(eval export $(outvar)=`cat $< | sed -e "s/$/\\\\\\n/"`)
+
+
 dreamcast/sound/snd_stream_drv.h: dreamcast/sound/snd_stream_drv.bin
 	@echo "unsigned char aica_fw[] = {" >> $@
 	@make hexdump -e infile=$< -e outfile=$@
 	@echo "};\n" >> $@
-
-common/exports/kernel_exports.o:
-	@echo SKIPPING!: $@
-#	@echo Building: $@
-#	@$(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
 
 dreamcast/sound/snd_stream_drv.bin:
 	@echo Building ARM sound driver...
@@ -108,9 +107,8 @@ dreamcast/kernel/banner.o: dreamcast/kernel/banner.c
 	@echo Generating banner data...
 	$(eval VERSION:=Git revision $(shell git rev-list --full-history --all --abbrev-commit | head -1))
 	$(eval HOSTNAME:=$(shell hostname -f))
-	$(eval BANNER:="KallistiOS $(VERSION): $(shell date)\n  $(shell whoami)@$(HOSTNAME)")
-	$(eval LICENSE:="$(shell cat LICENSE):")
-	$(eval AUTHORS:="$(shell cat AUTHORS)")
+	$(eval BANNER:=KallistiOS $(VERSION): $(shell date)\n  $(shell whoami)@$(HOSTNAME))
+	$(eval LICENSE:=$(shell cat LICENSE | sed -e "s/$$/\\\\n/" -e "s/\\\"/\\\\\"/g"))
+	$(eval AUTHORS:=$(shell cat AUTHORS | sed -e "s/$$/\\\\n/" -e "s/\\\"/\\\\\"/g"))
 	@echo Building: $@
-	@$(GCCPREFIX)-gcc $(CFLAGS) -DBANNER=$(BANNER) -DLICENSE=$(LICENSE) -DAUTHORS=$(AUTHORS) -c $< -o $@
-
+	$(GCCPREFIX)-gcc $(CFLAGS) -DBANNER="\"$(BANNER)\"" -DLICENSE="\"$(LICENSE)\"" -DAUTHORS="\"$(AUTHORS)\"" -c $< -o $@
