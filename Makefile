@@ -51,15 +51,12 @@ $(TARGET): $(OBJS)
 	@$(GCCPREFIX)-ar rcs $@ $(OBJS)
 	@echo Linking: $@
 
-install_headers:
-	@echo "Installing headers..."
-	@cp -R common/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include
-	@cp -R addons/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include
-	@cp -R $(PLATFORM)/include/*	$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include
-
 install: $(TARGET)
 	@echo -n "Installing..."
-	@cp $(TARGET) $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/lib
+	@cp -R common/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+	@cp -R addons/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+	@cp -R $(PLATFORM)/include/*	$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+	@cp $(TARGET) $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/lib/
 
 clean:
 	@rm -f $(OBJS) $(TARGET)
@@ -115,4 +112,5 @@ dreamcast/kernel/banner.o: dreamcast/kernel/banner.c
 	$(eval LICENSE:="$(shell cat LICENSE):")
 	$(eval AUTHORS:="$(shell cat AUTHORS)")
 	@echo Building: $@
-	$(GCCPREFIX)-gcc $(CFLAGS) -DBANNER=$(BANNER) -DLICENSE=$(LICENSE) -DAUTHORS=$(AUTHORS) -c $< -o $@
+	@$(GCCPREFIX)-gcc $(CFLAGS) -DBANNER=$(BANNER) -DLICENSE=$(LICENSE) -DAUTHORS=$(AUTHORS) -c $< -o $@
+
