@@ -1,8 +1,8 @@
 #!/bin/sh
+#"common/exports/" "nmmgr.o" "kernel_exports.o" "exports.o" "library.o" 
 for file in \
 "addons/libppp/" "ppp.o" "lcp.o" "pap.o" "ipcp.o" \
 "addons/libkosext2fs/" "ext2fs.o" "bitops.o" "block.o" "inode.o" "superblock.o" "fs_ext2.o" "symlink.o" "directory.o" \
-"common/exports/" "nmmgr.o" "kernel_exports.o" "exports.o" "library.o" \
 "common/mm/" "malloc_debug.o" "cplusplus.o" \
 "common/libc/c11/" "call_once.o" "cnd_broadcast.o" "cnd_destroy.o" "cnd_init.o" "cnd_signal.o" "cnd_timedwait.o" "cnd_wait.o" "mtx_destroy.o" "mtx_init.o" "mtx_lock.o" "mtx_timedlock.o" "mtx_trylock.o" "mtx_unlock.o" "thrd_create.o" "thrd_current.o" "thrd_detach.o" "thrd_equal.o" "thrd_exit.o" "thrd_join.o" "thrd_sleep.o" "thrd_yield.o" "tss_create.o" "tss_delete.o" "tss_get.o" "tss_set.o" "aligned_alloc.o" \
 "common/libc/newlib/" "lock_common.o" "newlib_close.o" "newlib_env_lock.o" "newlib_environ.o" "newlib_execve.o" "newlib_exit.o" "newlib_fork.o" "newlib_fstat.o" "newlib_getpid.o" "newlib_gettimeofday.o" "newlib_isatty.o" "newlib_kill.o" "newlib_link.o" "newlib_lseek.o" "newlib_malloc.o" "newlib_open.o" "newlib_read.o" "newlib_sbrk.o" "newlib_stat.o" "newlib_times.o" "newlib_unlink.o" "newlib_wait.o" "newlib_write.o" "newlib_fcntl.o" "verify_newlib.o" \
