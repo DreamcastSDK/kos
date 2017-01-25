@@ -1,3 +1,7 @@
+ifneq ($(DEBUG),true)
+  QUIET:=@
+endif
+
 ifndef PLATFORM
   PLATFORM:=dreamcast
 endif
@@ -48,56 +52,56 @@ CFLAGS+=-Icommon/net \
 GCCPREFIX:=$(shell echo $(ARCH) | cut -d '-' -f 1)-$(PLATFORM)
 
 $(TARGET): $(OBJS)
-	@$(GCCPREFIX)-ar rcs $@ $(OBJS)
 	@echo Linking: $@
+	$(QUIET) $(GCCPREFIX)-ar rcs $@ $(OBJS)
 
 install: $(TARGET)
 	@echo "Installing..."
-	@cp -R common/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
-	@cp -R addons/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
-	@cp -R $(PLATFORM)/include/*	$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
-	@cp $(TARGET) $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/lib/
+	$(QUIET) cp -R common/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+	$(QUIET) cp -R addons/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+	$(QUIET) cp -R $(PLATFORM)/include/*	$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+	$(QUIET) cp $(TARGET) $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/lib/
 
 clean:
-	@rm -f $(OBJS) $(TARGET)
+	$(QUIET) rm -f $(OBJS) $(TARGET)
 
 common/libc/c11/%.o: common/libc/c11/%.c
 	@echo Building: $@
-	@$(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
+	$(QUIET) $(GCCPREFIX)-gcc -std=c11 $(CFLAGS) -c $< -o $@
 
 %.o: %.c
 	@echo Building: $@
-	@$(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
 
 %.o: %.s
 	@echo Building: $@
-	@$(GCCPREFIX)-as $< -o $@
+	$(QUIET) $(GCCPREFIX)-as $< -o $@
 
 %.o: %.S
 	@echo Building: $@
-	@$(GCCPREFIX)-as $< -o $@
+	$(QUIET) $(GCCPREFIX)-as $< -o $@
 
 hexdump: $(infile)
-	@od -t x1 $(infile) | sed -e "s/[0-9a-fA-F]\{7,9\}//" -e "s/ \([0-9a-fA-F][0-9a-fA-F]\)/0x\1, /g" >> $(outfile)
+	$(QUIET) od -t x1 $(infile) | sed -e "s/[0-9a-fA-F]\{7,9\}//" -e "s/ \([0-9a-fA-F][0-9a-fA-F]\)/0x\1, /g" >> $(outfile)
 
 dreamcast/sound/snd_stream_drv.h: dreamcast/sound/snd_stream_drv.bin
-	@echo "unsigned char aica_fw[] = {" >> $@
-	@make hexdump -e infile=$< -e outfile=$@
-	@echo "};\n" >> $@
+	$(QUIET) echo "unsigned char aica_fw[] = {" >> $@
+	$(QUIET) make hexdump -e infile=$< -e outfile=$@ -e DEBUG=$(DEBUG)
+	$(QUIET) echo "};\n" >> $@
 
 dreamcast/sound/snd_stream_drv.bin:
 	@echo Building ARM sound driver...
-	@make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM)
-	@make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) install
-	@make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) clean
+	$(QUIET) make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG)
+	$(QUIET) make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG) install
+	$(QUIET) make -C dreamcast/sound/arm -e PLATFORM=$(PLATFORM) -e DEBUG=$(DEBUG) clean
 
 dreamcast/sound/snd_stream_drv.o: dreamcast/sound/snd_stream_drv.bin
 	@echo "Transforming... $< to $@"
-	@echo ".section .rodata; .align 2; " | $(GCCPREFIX)-as -o tmp3.bin
-	@echo "SECTIONS { .rodata : { _snd_stream_drv = .; *(.data); _snd_stream_drv_end = .; } }" > tmp1.ld
-	@$(GCCPREFIX)-ld --no-warn-mismatch --format binary --oformat elf32-shl $< --format elf32-shl tmp3.bin -o tmp2.bin -r -EL -T tmp1.ld
-	@$(GCCPREFIX)-objcopy --set-section-flags .rodata=alloc,load,data,readonly tmp2.bin $@
-	@rm -f tmp1.ld tmp2.bin tmp3.bin $<
+	$(QUIET) echo ".section .rodata; .align 2; " | $(GCCPREFIX)-as -o tmp3.bin
+	$(QUIET) echo "SECTIONS { .rodata : { _snd_stream_drv = .; *(.data); _snd_stream_drv_end = .; } }" > tmp1.ld
+	$(QUIET) $(GCCPREFIX)-ld --no-warn-mismatch --format binary --oformat elf32-shl $< --format elf32-shl tmp3.bin -o tmp2.bin -r -EL -T tmp1.ld
+	$(QUIET) $(GCCPREFIX)-objcopy --set-section-flags .rodata=alloc,load,data,readonly tmp2.bin $@
+	$(QUIET) rm -f tmp1.ld tmp2.bin tmp3.bin $<
 
 dreamcast/kernel/banner.o: dreamcast/kernel/banner.c
 	@echo Generating banner data...
@@ -107,4 +111,4 @@ dreamcast/kernel/banner.o: dreamcast/kernel/banner.c
 	$(eval LICENSE:=$(shell cat LICENSE | sed -e "s/$$/\\\\n/" -e "s/\\\"/\\\\\"/g"))
 	$(eval AUTHORS:=$(shell cat AUTHORS | sed -e "s/$$/\\\\n/" -e "s/\\\"/\\\\\"/g"))
 	@echo Building: $@
-	$(GCCPREFIX)-gcc $(CFLAGS) -DBANNER="\"$(BANNER)\"" -DLICENSE="\"$(LICENSE)\"" -DAUTHORS="\"$(AUTHORS)\"" -c $< -o $@
+	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -DBANNER="\"$(BANNER)\"" -DLICENSE="\"$(LICENSE)\"" -DAUTHORS="\"$(AUTHORS)\"" -c $< -o $@

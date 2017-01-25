@@ -1,3 +1,7 @@
+ifneq ($(DEBUG),true)
+  QUIET:=@
+endif
+
 ifndef PLATFORM
   PLATFORM:=dreamcast
 endif
@@ -13,26 +17,26 @@ GCCPREFIX:=$(shell echo $(ARCH) | cut -d '-' -f 1)-$(PLATFORM)
 
 $(TARGET).bin: $(TARGET).elf
 	@echo Extracting: $@
-	@$(GCCPREFIX)-objcopy -O binary $< $@
+	$(QUIET) $(GCCPREFIX)-objcopy -O binary $< $@
 
 $(TARGET).elf: $(OBJS)
 	@echo Linking: $@
-	@$(GCCPREFIX)-gcc -Wl,-Ttext,0x00000000,-Map,$(TARGET).map,-N -nostartfiles -nostdlib -e reset -o $@ $(OBJS) -lgcc
+	$(QUIET) $(GCCPREFIX)-gcc -Wl,-Ttext,0x00000000,-Map,$(TARGET).map,-N -nostartfiles -nostdlib -e reset -o $@ $(OBJS) -lgcc
 
 %.o: %.c
 	@echo Building: $@
-	@$(GCCPREFIX)-gcc -std=c11 -c $< -o $@
+	$(QUIET) $(GCCPREFIX)-gcc -std=c11 -c $< -o $@
 
 %.o: %.s
 	@echo Building: $@
-	@$(GCCPREFIX)-as $< -o $@
+	$(QUIET) $(GCCPREFIX)-as $< -o $@
 
 %.o: %.S
 	@echo Building: $@
-	@$(GCCPREFIX)-as $< -o $@
+	$(QUIET) $(GCCPREFIX)-as $< -o $@
 
 install:
-	@mv $(TARGET).bin ..
+	$(QUIET) mv $(TARGET).bin ..
 
 clean:
-	@rm -f $(OBJS) $(TARGET).elf $(TARGET).map $(TARGET).bin
+	$(QUIET) rm -f $(OBJS) $(TARGET).elf $(TARGET).map $(TARGET).bin
