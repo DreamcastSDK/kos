@@ -4,7 +4,8 @@
    Copyright (C) 2013 Lawrence Sebald
 */
 
-#define QUOTE(x) #x
+#define Q(x) #x
+#define QUOTE(x) Q(x)
 
 static const char banner[] = QUOTE(BANNER);
 static const char license[] = QUOTE(LICENSE);
