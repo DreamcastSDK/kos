@@ -52,7 +52,7 @@ $(TARGET): $(OBJS)
 	@echo Linking: $@
 
 install: $(TARGET)
-	@echo -n "Installing..."
+	@echo "Installing..."
 	@cp -R common/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
 	@cp -R addons/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
 	@cp -R $(PLATFORM)/include/*	$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
