@@ -62,6 +62,7 @@ install_headers:
 	$(QUIET) cp -R common/include/kos           $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
 	$(QUIET) cp -R $(PLATFORM)/include          $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/
 	$(QUIET) cp -R addons/include/kos           $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+	$(QUIET) cp common/include/kos.h            $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
 	$(QUIET) cp common/include/pthread.h        $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
 	$(QUIET) cp common/include/sys/_pthread.h   $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/sys/
 	$(QUIET) cp common/include/sys/sched.h      $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/sys/
