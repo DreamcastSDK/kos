@@ -55,8 +55,8 @@ $(TARGET): $(OBJS)
 	@echo Linking: $@
 	$(QUIET) $(GCCPREFIX)-ar rcs $@ $(OBJS)
 
-install: $(TARGET)
-	@echo "Installing..."
+install_headers:
+	@echo "Installing headers..."
 	$(QUIET) mkdir -p $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/kos
 	$(QUIET) mkdir -p $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/sys
 	$(QUIET) cp -R common/include/kos           $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
@@ -67,6 +67,9 @@ install: $(TARGET)
 	$(QUIET) cp common/include/sys/sched.h      $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/sys/
 #	$(QUIET) cp -R common/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
 #	$(QUIET) cp -R addons/include/*		$(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/include/
+
+install: $(TARGET) install_headers
+	@echo "Installing library..."
 	$(QUIET) cp $(TARGET)                       $(INSTALL_PATH)/$(PLATFORM)/$(ARCH)/lib/
 
 clean:
