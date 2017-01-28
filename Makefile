@@ -101,7 +101,7 @@ dreamcast/sound/snd_stream_drv.o: dreamcast/sound/snd_stream_drv.bin
 	$(QUIET) echo "SECTIONS { .rodata : { _snd_stream_drv = .; *(.data); _snd_stream_drv_end = .; } }" > tmp1.ld
 	$(QUIET) $(GCCPREFIX)-ld --no-warn-mismatch --format binary --oformat elf32-shl $< --format elf32-shl tmp3.bin -o tmp2.bin -r -EL -T tmp1.ld
 	$(QUIET) $(GCCPREFIX)-objcopy --set-section-flags .rodata=alloc,load,data,readonly tmp2.bin $@
-	$(QUIET) rm -f tmp1.ld tmp2.bin tmp3.bin $<
+	$(QUIET) rm -f tmp1.ld tmp2.bin tmp3.bin
 
 dreamcast/kernel/banner.o: dreamcast/kernel/banner.c
 	@echo Generating banner data...
