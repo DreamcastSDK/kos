@@ -50,7 +50,7 @@ CFLAGS+=-Icommon/net \
 	-Idreamcast/kernel
 
 
-GCCPREFIX:=$(shell echo $(ARCH) | cut -d '-' -f 1)-$(PLATFORM)
+GCCPREFIX:=$(PLATFORM)-$(shell echo $(ARCH) | cut -d '-' -f 1)
 
 $(TARGET): $(OBJS)
 	@echo Linking: $@
