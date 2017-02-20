@@ -136,6 +136,8 @@ common/kernel_export_stubs.c: common/exports.txt
 common/kernel_export_stubs.o: common/kernel_export_stubs.c
 	@echo Building: $@
 	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+	@echo Cleaning up generated file: $<
+	$(QUIET) echo rm $<
 
 dreamcast/arch_export_stubs.c: dreamcast/exports.txt
 	sh genexportstubs.sh $< $@
@@ -143,6 +145,8 @@ dreamcast/arch_export_stubs.c: dreamcast/exports.txt
 dreamcast/arch_export_stubs.o: dreamcast/arch_export_stubs.c
 	@echo Building: $@
 	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+	@echo Cleaning up generated file: $<
+	$(QUIET) echo rm $<
 
 common/exports/kernel_exports.c: common/exports.txt
 	sh genexports.sh $< $@ kernel_symtab
@@ -150,6 +154,8 @@ common/exports/kernel_exports.c: common/exports.txt
 common/exports/kernel_exports.o: common/exports/kernel_exports.c
 	@echo Building: $@
 	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+	@echo Cleaning up generated file: $<
+	$(QUIET) echo rm $<
 
 dreamcast/kernel/arch_exports.c: dreamcast/exports.txt
 	sh genexports.sh $< $@ arch_symtab
@@ -157,3 +163,5 @@ dreamcast/kernel/arch_exports.c: dreamcast/exports.txt
 dreamcast/kernel/arch_exports.o: dreamcast/kernel/arch_exports.c
 	@echo Building: $@
 	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+	@echo Cleaning up generated file: $<
+	$(QUIET) echo rm $<
