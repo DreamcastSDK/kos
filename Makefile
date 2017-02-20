@@ -128,3 +128,32 @@ dreamcast/kernel/banner.o: dreamcast/kernel/banner.c
 	$(eval AUTHORS:=$(shell cat AUTHORS | sed -e "s/$$/\\\\n/" -e "s/\\\"/\\\\\"/g"))
 	@echo Building: $@
 	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -DBANNER="\"$(BANNER)\"" -DLICENSE="\"$(LICENSE)\"" -DAUTHORS="\"$(AUTHORS)\"" -c $< -o $@
+
+# generative
+common/kernel_export_stubs.c: common/exports.txt
+	sh genexportstubs.sh $< $@
+
+common/kernel_export_stubs.o: common/kernel_export_stubs.c
+	@echo Building: $@
+	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+
+dreamcast/arch_export_stubs.c: dreamcast/exports.txt
+	sh genexportstubs.sh $< $@
+
+dreamcast/arch_export_stubs.o: dreamcast/arch_export_stubs.c
+	@echo Building: $@
+	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+
+common/exports/kernel_exports.c: common/exports.txt
+	sh genexports.sh $< $@ kernel_symtab
+
+common/exports/kernel_exports.o: common/exports/kernel_exports.c
+	@echo Building: $@
+	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@
+
+dreamcast/kernel/arch_exports.c: dreamcast/exports.txt
+	sh genexports.sh $< $@ arch_symtab
+
+dreamcast/kernel/arch_exports.o: dreamcast/kernel/arch_exports.c
+	@echo Building: $@
+	$(QUIET) $(GCCPREFIX)-gcc $(CFLAGS) -c $< -o $@

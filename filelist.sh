@@ -1,6 +1,4 @@
 #!/bin/sh
-#"common/exports/"             "nmmgr.o" "kernel_exports.o" "exports.o" "library.o" \
-#"dreamcast/kernel/"           "arch_exports.o" \
 #"common/mm/"                  "malloc_debug.o" \
 #"common/mm/"                  "malloc.o" \
 
@@ -9,6 +7,7 @@ for file in \
 "addons/libkosutils/"         "bspline.o" "img.o" "pcx_small.o" "md5.o" \
 "addons/libkosext2fs/"        "ext2fs.o" "bitops.o" "block.o" "inode.o" "superblock.o" "fs_ext2.o" "symlink.o" "directory.o" \
 "common/debug/"               "dbgio.o" \
+"common/exports/"             "nmmgr.o" "kernel_exports.o" "exports.o" "library.o" \
 "common/mm/"                  "cplusplus.o" \
 "common/libc/newlib/"         "lock_common.o" "newlib_close.o" "newlib_env_lock.o" "newlib_environ.o" "newlib_execve.o" "newlib_exit.o" "newlib_fork.o" "newlib_fstat.o" "newlib_getpid.o" "newlib_gettimeofday.o" "newlib_isatty.o" "newlib_kill.o" "newlib_link.o" "newlib_lseek.o" "newlib_malloc.o" "newlib_open.o" "newlib_read.o" "newlib_sbrk.o" "newlib_stat.o" "newlib_times.o" "newlib_unlink.o" "newlib_wait.o" "newlib_write.o" "newlib_fcntl.o" "verify_newlib.o" \
 "common/libc/pthreads/"       "pthread_mutex.o" "pthread_cond.o" "pthread_thd_attr.o" "pthread_thd.o" "pthread_tls.o" \
@@ -24,7 +23,7 @@ for file in \
 "dreamcast/hardware/modem/"   "mdata.o" "mintr.o" "modem.o" "chainbuf.o" \
 "dreamcast/hardware/network/" "broadband_adapter.o" "lan_adapter.o" \
 "dreamcast/sound/"            "snd_iface.o" "snd_sfxmgr.o" "snd_stream.o" "snd_stream_drv.o" "snd_mem.o" \
-"dreamcast/kernel/"           "banner.o" "cache.o" "entry.o" "irq.o" "init.o" "mm.o" "panic.o" "rtc.o" "timer.o" "init_flags_default.o" "init_romdisk_default.o" "mmu.o" "itlb.o" "exec.o" "execasm.o" "stack.o" "gdb_stub.o" "thdswitch.o" "startup.o" \
+"dreamcast/kernel/"           "banner.o" "cache.o" "entry.o" "irq.o" "init.o" "mm.o" "panic.o" "rtc.o" "timer.o" "init_flags_default.o" "init_romdisk_default.o" "mmu.o" "itlb.o" "exec.o" "execasm.o" "stack.o" "gdb_stub.o" "thdswitch.o" "startup.o" "arch_exports.o" \
 "dreamcast/math/"             "fmath.o" "matrix.o" "matrix3d.o" \
 "dreamcast/fs/"               "fs_iso9660.o" "fs_vmu.o" "fs_dcload.o" "dcload-syscall.o" "vmufs.o" "fs_dclsocket.o"; \
 do \
