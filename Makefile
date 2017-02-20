@@ -91,11 +91,11 @@ common/libc/c11/%.o: common/libc/c11/%.c
 
 %.o: %.s
 	@echo Building: $@
-	$(QUIET) $(GCCPREFIX)-as -EL $< -o $@
+	$(QUIET) $(GCCPREFIX)-as -little $< -o $@
 
 %.o: %.S
 	@echo Building: $@
-	$(QUIET) $(GCCPREFIX)-as -EL $< -o $@
+	$(QUIET) $(GCCPREFIX)-as -little $< -o $@
 
 hexdump: $(infile)
 	$(QUIET) od -t x1 $(infile) | sed -e "s/[0-9a-fA-F]\{7,9\}//" -e "s/ \([0-9a-fA-F][0-9a-fA-F]\)/0x\1, /g" >> $(outfile)
