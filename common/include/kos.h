@@ -66,7 +66,7 @@ __BEGIN_DECLS
 #include <arch/stack.h>
 #include <arch/byteorder.h>
 
-#ifdef _arch_dreamcast
+#ifdef __DREAMCAST__
 #   include <arch/gdb.h>
 #   include <arch/mmu.h>
 #   include <arch/rtc.h>
@@ -109,7 +109,7 @@ __BEGIN_DECLS
 #   include <dc/video.h>
 #   include <dc/vmu_pkg.h>
 #   include <dc/vmufs.h>
-#else   /* _arch_dreamcast */
+#else   /* __DREAMCAST__ */
 #   error Invalid architecture or no architecture specified
 #endif
 

@@ -15,7 +15,7 @@
 #include <kos/library.h>
 
 /* What's our architecture code we're expecting? */
-#if defined(_arch_dreamcast)
+#if defined(__DREAMCAST__)
 #   define ARCH_CODE EM_SH
 #elif defined(_arch_ia32)
 #   define ARCH_CODE EM_386
